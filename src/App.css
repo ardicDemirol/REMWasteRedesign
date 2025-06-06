@@ -1,10 +1,13 @@
 /* Remove all default styles, use Tailwind for everything. */
 #root {
-  @apply min-h-screen bg-black text-gray-100;
+  min-height: 100vh;
+  background-color: #000;
+  color: #f3f4f6; /* Tailwind's text-gray-100 */
 }
 
 .logo {
-  @apply h-24 p-6;
+  height: 6rem; /* h-24 */
+  padding: 1.5rem; /* p-6 */
   will-change: filter;
   transition: filter 300ms;
 }
@@ -29,11 +32,10 @@
     animation: logo-spin infinite 20s linear;
   }
 }
-
 .card {
-  @apply p-8;
+  padding: 2rem; /* p-8 */
 }
 
 .read-the-docs {
-  @apply text-gray-500;
+  color: #6b7280; /* text-gray-500 */
 }
