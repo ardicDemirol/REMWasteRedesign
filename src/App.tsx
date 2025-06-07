@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Skip } from "./types/skip";
-import { getSkips } from "./constants/skips";
+import { getSkips } from "./services/skips";
 import { transformSkips } from "./utils/transformSkips";
 import { themeColors } from "./constants/theme";
 import SkipCard from "./components/SkipCard";
