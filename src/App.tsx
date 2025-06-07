@@ -5,8 +5,10 @@ import { transformSkips } from "./utils/transformSkips";
 import { themeColors } from "./constants/theme";
 import SkipCard from "./components/SkipCard";
 import SkipDetailsModal from "./components/SkipDetailsModal";
-import Filters, { type SortOption } from "./components/Filters";
+import Filters from "./components/Filters";
 import ThemeToggle from "./components/ThemeToggle";
+import type { SortOption } from "./utils/sortSkips";
+import { sortSkips } from "./utils/sortSkips";
 
 function App() {
   const [selected, setSelected] = useState<number | null>(null);
@@ -14,9 +16,11 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRoad, setFilterRoad] = useState(false);
   const [filterHeavyWaste, setFilterHeavyWaste] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOption>("price-asc");
+  const [filterPopular, setFilterPopular] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [skips, setSkips] = useState<Skip[]>([]);
+  const [hoveredCardId, setHoveredCardId] = useState<number | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>("price-asc");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,32 +35,31 @@ function App() {
   const selectedSkip = skips.find((skip) => skip.id === selected);
 
   const filteredSkips = useMemo(() => {
-    return skips
-      .filter((skip) => {
-        const matchesSearch = `${skip.size} Yard Skip`
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-        const matchesRoadFilter = filterRoad ? skip.allowed_on_road : true;
-        const matchesHeavyWasteFilter = filterHeavyWaste
-          ? skip.allows_heavy_waste
-          : true;
-        return matchesSearch && matchesRoadFilter && matchesHeavyWasteFilter;
-      })
-      .sort((a, b) => {
-        switch (sortOption) {
-          case "price-asc":
-            return a.price_before_vat - b.price_before_vat;
-          case "price-desc":
-            return b.price_before_vat - a.price_before_vat;
-          case "size-asc":
-            return a.size - b.size;
-          case "size-desc":
-            return b.size - a.size;
-          default:
-            return 0;
-        }
-      });
-  }, [skips, searchTerm, filterRoad, filterHeavyWaste, sortOption]);
+    const filtered = skips.filter((skip) => {
+      const matchesSearch = `${skip.size} Yard Skip`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesRoadFilter = filterRoad ? skip.allowed_on_road : true;
+      const matchesHeavyWasteFilter = filterHeavyWaste
+        ? skip.allows_heavy_waste
+        : true;
+      const matchesPopularFilter = filterPopular ? skip.popular : true;
+      return (
+        matchesSearch &&
+        matchesRoadFilter &&
+        matchesHeavyWasteFilter &&
+        matchesPopularFilter
+      );
+    });
+    return sortSkips(filtered, sortOption);
+  }, [
+    skips,
+    searchTerm,
+    filterRoad,
+    filterHeavyWaste,
+    filterPopular,
+    sortOption,
+  ]);
 
   const handleCardClick = (skipId: number) => {
     if (showPanel && selected === skipId) {
@@ -100,6 +103,8 @@ function App() {
           setFilterRoad={setFilterRoad}
           filterHeavyWaste={filterHeavyWaste}
           setFilterHeavyWaste={setFilterHeavyWaste}
+          filterPopular={filterPopular}
+          setFilterPopular={setFilterPopular}
           sortOption={sortOption}
           setSortOption={setSortOption}
           themeColors={colors}
@@ -128,6 +133,9 @@ function App() {
                   selected={selected === skip.id}
                   showPanel={showPanel}
                   darkMode={darkMode}
+                  hovered={hoveredCardId === skip.id}
+                  onMouseEnter={() => setHoveredCardId(skip.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
                   onClick={handleCardClick}
                 />
               ))}
@@ -138,7 +146,10 @@ function App() {
           <SkipDetailsModal
             skip={selectedSkip}
             darkMode={darkMode}
-            onClose={() => setShowPanel(false)}
+            onClose={() => {
+              setShowPanel(false);
+              setHoveredCardId(null);
+            }}
           />
         )}
       </div>

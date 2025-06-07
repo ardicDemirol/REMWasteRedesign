@@ -9,6 +9,9 @@ interface SkipCardProps {
   selected: boolean;
   showPanel: boolean;
   darkMode: boolean;
+  hovered?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   onClick: (id: number) => void;
 }
 
@@ -17,21 +20,32 @@ const SkipCard: React.FC<SkipCardProps> = ({
   selected,
   showPanel,
   darkMode,
+  hovered = false,
+  onMouseEnter,
+  onMouseLeave,
   onClick,
 }) => {
   const colors = themeColors(darkMode);
   return (
     <div
       onClick={() => onClick(skip.id)}
-      className={`${
-        colors.cardBg
-      } rounded-2xl shadow-md overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg ${
-        selected && showPanel ? `ring-4 ${colors.ring}` : ""
-      }`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className={`rounded-2xl shadow-md overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg
+      ${selected && showPanel ? "ring-4 ring-amber-500 z-20" : ""}
+      ${
+        hovered && !(selected && showPanel)
+          ? "scale-105 ring-2 ring-amber-300 z-10"
+          : ""
+      }
+      ${colors.cardBg}
+      flex flex-col h-full
+    `}
       role="button"
       tabIndex={0}
       aria-label={`Select ${skip.size} Yard Skip for £${getDisplayPrice(skip)}`}
       onKeyDown={(e) => e.key === "Enter" && onClick(skip.id)}
+      style={{ outline: "none" }}
     >
       <div className="relative h-40 w-full">
         <img
@@ -55,47 +69,50 @@ const SkipCard: React.FC<SkipCardProps> = ({
           </div>
         )}
       </div>
-      <div className="p-5">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            STARTING FROM
-          </span>
-          <span className="text-2xl font-bold text-amber-600 dark:text-amber-500">
-            £{getDisplayPrice(skip)}
-          </span>
-        </div>
-        <div
-          className={`space-y-3 text-sm mb-6 ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
-        >
-          <div className="flex items-center">
-            <FiMaximize className="mr-3 text-amber-500" />
-            <span>{skip.dimensions}</span>
+      <div className="flex flex-col flex-1 justify-between p-5">
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              STARTING FROM
+            </span>
+            <span className="text-2xl font-bold text-amber-600 dark:text-amber-500">
+              £{getDisplayPrice(skip)}
+            </span>
           </div>
-          <div className="flex items-center">
-            <FiBox className="mr-3 text-amber-500" />
-            <span>{skip.capacity}</span>
+          <div
+            className={`space-y-3 text-sm mb-6 ${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            }`}
+          >
+            <div className="flex items-center">
+              <FiMaximize className="mr-3 text-amber-500" />
+              <span>{skip.dimensions}</span>
+            </div>
+            <div className="flex items-center">
+              <FiBox className="mr-3 text-amber-500" />
+              <span>{skip.capacity}</span>
+            </div>
+            {skip.allowed_on_road && (
+              <div className="flex items-center text-amber-500 dark:text-amber-400">
+                <FiInfo className="mr-3" />
+                <span>Road permit required</span>
+              </div>
+            )}
+            {skip.allows_heavy_waste && (
+              <div className="flex items-center text-green-500 dark:text-green-400">
+                <FiCheck className="mr-3" />
+                <span>Allows heavy waste</span>
+              </div>
+            )}
           </div>
-          {skip.allowed_on_road && (
-            <div className="flex items-center text-amber-500 dark:text-amber-400">
-              <FiInfo className="mr-3" />
-              <span>Road permit required</span>
-            </div>
-          )}
-          {skip.allows_heavy_waste && (
-            <div className="flex items-center text-green-500 dark:text-green-400">
-              <FiCheck className="mr-3" />
-              <span>Allows heavy waste</span>
-            </div>
-          )}
         </div>
         <button
-          className={`w-full py-3 px-4 rounded-xl font-bold transition-colors flex items-center justify-center ${
-            selected && showPanel
-              ? `${colors.primary} ${colors.primaryText}`
-              : `${colors.secondary} ${colors.secondaryText}`
-          }`}
+          className={`w-full py-3 px-4 rounded-xl font-bold transition-colors flex items-center justify-center mt-auto
+            ${
+              selected && showPanel
+                ? `${colors.primary} ${colors.primaryText}`
+                : `${colors.secondary} ${colors.secondaryText}`
+            }`}
           aria-label={`Select ${skip.size} Yard Skip`}
         >
           {selected && showPanel ? (
