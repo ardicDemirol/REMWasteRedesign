@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Skip } from "./types/skip";
-import { apiSkips } from "./constants/skips";
+import { getSkips } from "./constants/skips";
 import { transformSkips } from "./utils/transformSkips";
 import { themeColors } from "./constants/theme";
 import SkipCard from "./components/SkipCard";
@@ -19,8 +19,13 @@ function App() {
   const [skips, setSkips] = useState<Skip[]>([]);
 
   useEffect(() => {
-    const transformed = transformSkips(apiSkips);
-    setSkips(transformed);
+    const fetchData = async () => {
+      const skips = await getSkips();
+      const transformed = transformSkips(skips);
+      setSkips(transformed);
+    };
+
+    fetchData();
   }, []);
 
   const selectedSkip = skips.find((skip) => skip.id === selected);
@@ -97,7 +102,6 @@ function App() {
           setFilterHeavyWaste={setFilterHeavyWaste}
           sortOption={sortOption}
           setSortOption={setSortOption}
-          darkMode={darkMode}
           themeColors={colors}
         />
         <div className="mb-12">
