@@ -37,7 +37,10 @@ const Filters: React.FC<FiltersProps> = ({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (categoryMenuRef.current && !categoryMenuRef.current.contains(event.target as Node)) {
+      if (
+        categoryMenuRef.current &&
+        !categoryMenuRef.current.contains(event.target as Node)
+      ) {
         setShowCategoryMenu(false);
       }
       if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
@@ -77,7 +80,7 @@ const Filters: React.FC<FiltersProps> = ({
           <button
             type="button"
             className={`px-4 py-2 rounded-lg border ${themeColors.inputBg} ${themeColors.text} border-gray-300 dark:border-gray-600 flex items-center gap-2 focus:outline-none transition-colors`}
-            style={{ boxShadow: 'none' }}
+            style={{ boxShadow: "none" }}
             onClick={() => setShowCategoryMenu((v) => !v)}
             tabIndex={0}
           >
