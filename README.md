@@ -79,7 +79,7 @@ This project is a comprehensive redesign of the "Choose Your Skip Size" page fro
 
 ## 🌐 Live Demo
 
-- [CodeSandbox Demo](https://codesandbox.io/p/sandbox/github/ardicDemirol/REMWasteRedesign) <br>
+- [CodeSandbox Demo](https://cs9fwc-5173.csb.app/) <br>
 
 ---
 
